@@ -1,7 +1,0 @@
-\beamer@sectionintoc {1}{RCTs}{3}{0}{1}
-\beamer@sectionintoc {2}{Per-protocol effects}{5}{0}{2}
-\beamer@sectionintoc {3}{Example using ACTG 5202 Trial}{10}{0}{3}
-\beamer@subsectionintoc {3}{1}{Population}{12}{0}{3}
-\beamer@subsectionintoc {3}{2}{Analysis Plan}{14}{0}{3}
-\beamer@subsectionintoc {3}{3}{Results}{16}{0}{3}
-\beamer@subsectionintoc {3}{4}{Limitations and Future}{21}{0}{3}

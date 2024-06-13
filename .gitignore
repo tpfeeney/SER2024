@@ -1,6 +1,10 @@
-!*.tex
-!*.pdf
-!*.md
-!*.sty
-!/Images
-!/figs
+*.log
+*.fls
+*.nav
+*.out
+*.fdb_latexmk
+*.aux
+*.snm
+*.synctex.gz
+*.toc
+*.DS_Store
