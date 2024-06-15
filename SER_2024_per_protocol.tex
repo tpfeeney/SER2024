@@ -70,7 +70,7 @@ shorten <-> 3pt, preaction = {decorate}
 Using per-protocol analyses obtain better estimated of HIV treatment effects.}
 
 \author[Timothy Feeney]{by Timothy Feeney \\
-SER June 20 2024}
+SER June 19 2024}
 %\institute[UNC-Chapel Hill]{Gillings School of Global Public Health; UNC-Chapel Hill}
 \date{e: feeney@unc.edu, bsky: @tfeend.bsky.social}
 \titlegraphic{\includegraphics[width=\textwidth]{images/gillings_blue.jpg}}
@@ -132,9 +132,9 @@ SER June 20 2024}
             \begin{column}{0.4\textwidth} 
         \begin{itemize}
             \item Frequently done by excluding those not adhering\footnotemark[1]
-            \item[\ding{43}] Susceptible to selection bias 
+            \item Susceptible to selection bias
+            \item[\ding{43}] Can be addresed: e.g with inverse probability weighting (see next talk) 
         \end{itemize}
-        \footnotetext[1]{Cole \textit{et al.} JAMA Net. Open 2023, Dodd \textit{et al.} Trials 2012}
     \end{column}
 
     \begin{column}{0.6\textwidth}   
@@ -144,7 +144,7 @@ SER June 20 2024}
             \node (1) {\textbf{Randomization}};
             \node [right =of 1, text width=2.5cm] (2) {\textbf{Treatment Adherence}};
             \node [right =of 2] (3)  {\textbf{Outcome}};
-            \node [above =of 1] (5) {$\textbf{L}$};
+            \node [above =of 1] (5) {$\mathbf{L}$};
             \node [rectangle, draw, below =of 2] (6){\textbf{Selection}};
             
             \draw[Arrow] (1) to (2);
@@ -154,13 +154,10 @@ SER June 20 2024}
         \end{tikzpicture}
             }
     \end{center}
-
-    \vspace{0.4cm}
-    $\textbf{L}$ : vector of covariates\\
-
-    Can be addresed: e.g with inverse probability weighting (see next talk)
     \end{column}
-\end{columns} 
+\end{columns}
+\footnotetext[1]{Cole \textit{et al.} JAMA Net. Open 2023, Dodd \textit{et al.} Trials 2012}
+\footnotetext{$\mathbf{L}$ : vector of covariates} 
     \note{
         \begin{itemize}
             \item Per protocol effects are typically estimated by excluding those that deviate from the protocol
@@ -176,30 +173,29 @@ SER June 20 2024}
   
 \section{Per-protocol effects}
     \begin{frame}{There is no \textit{one} per-protocol effect}
-        \begin{columns}
-        \begin{column}{0.6\textwidth}
+        % \begin{columns}
+        % \begin{column}{0.6\textwidth}
             \begin{itemize}
                 \item Accounts for adherence
                 \item "Doc, what if I take all my doses like you tell me to?"
                 \item There are \textit{at least} 6 per-protocol parameters that can be estimated\footnotemark[1]
-                \item There are also $k\in\{1,\ldots,\infty\}$ protocols depend on how the investigator(s) define adherence.
+                \item There are also $k\in\{1,\ldots,\infty\}$ protocols depending on how the investigator(s) define adherence.
             \end{itemize}
-        \end{column}
-        \begin{column}{0.4\textwidth}
-            $$
-            \begin{aligned}
-            & E\left[Y^{r=1, \bar{a}=1}\right]-E\left[Y^{r=0, \bar{a}=1}\right] \\
-            & E\left[Y^{r=1, \bar{a}=1}\right]-E\left[Y^{r=0, \bar{a}=0}\right] \\
-            & E\left[Y^{r=0, \bar{a}=1}\right]-E\left[Y^{r=0, \bar{a}=0}\right] \\
-            & E\left[Y^{r=1, \bar{a}=1}\right]-E\left[Y^{r=1, \bar{a}=0}\right] \\
-            & E\left[Y^{r=0, \bar{a}=1}\right]-E\left[Y^{r=1, \bar{a}=0}\right] \\
-            & E\left[Y^{r=1, \bar{a}=0}\right]-E\left[Y^{r=0, \bar{a}=0}\right]
-            \end{aligned}
-            $$
-        \end{column}
-        \end{columns}
+        % \end{column}
+        % \begin{column}{0.4\textwidth}
+        %     $$
+        %     \begin{aligned}
+        %     & E\left[Y^{r=1, \bar{a}=1}\right]-E\left[Y^{r=0, \bar{a}=1}\right] \\
+        %     & E\left[Y^{r=1, \bar{a}=1}\right]-E\left[Y^{r=0, \bar{a}=0}\right] \\
+        %     & E\left[Y^{r=0, \bar{a}=1}\right]-E\left[Y^{r=0, \bar{a}=0}\right] \\
+        %     & E\left[Y^{r=1, \bar{a}=1}\right]-E\left[Y^{r=1, \bar{a}=0}\right] \\
+        %     & E\left[Y^{r=0, \bar{a}=1}\right]-E\left[Y^{r=1, \bar{a}=0}\right] \\
+        %     & E\left[Y^{r=1, \bar{a}=0}\right]-E\left[Y^{r=0, \bar{a}=0}\right]
+        %     \end{aligned}
+        %     $$
+        % \end{column}
+        % \end{columns}
         \footnotetext[1]{Rudolph \textit{et al.} Epidemiology 2020}
-        \footnotetext[2]{$r=$ randomization, $\bar{a}=$ treatment history}
         \note{However there is no ONE per protocol effect and there are at least 6 estimands that can be considered per protocol effect. They are llustrated here.
         \begin{itemize}
             \item For instance if you look at the second line this answers "what if I took my treatment as assigned the whole way through the trial" where as line five asks "what if I did the opposite of what I was assigned the whole way through the trial?"
@@ -219,8 +215,7 @@ SER June 20 2024}
             \item No missclassification and correct model specification 
         \end{itemize}
         \vspace{0.5cm}
-        Where, $C$=censoring, 
-        $t$ =time point from $0 \ldots t$, $g$ is a deterministic treatment strategy, overbar denotes history of values
+        $Y=$outcome, $C$=censoring, $A=$ treatment , $L=$ covariates, $t$ =time point from $0 \ldots t$, $g$ is a deterministic treatment strategy, overbar denotes history of values
         \footnotetext{Wen \textit{et al.} Biometrics 2019}
         \note{The causal idenfication criteria are slightly modified to account for the treatment regimens described by the trial protocol. This allows for us to take time into account
             \begin{itemize}
@@ -329,7 +324,8 @@ SER June 20 2024}
 
 \begin{frame}{ACTG 5202 Study Population}
     Phase 3b RCT at 59 sites, US and Puerto Rico
-    \vspace{0.3cm}
+    \vspace{0.53cm}
+
     \resizebox{\textwidth}{!}{% 
     \begin{tabular}{lll}
          & ABC/3TC & TDF/FTC\\
@@ -364,11 +360,12 @@ SER June 20 2024}
     \begin{frame}{Example: ACTG 5202 Reanalysis}
             Objective:
         \begin{itemize}
-            \item Per-protocol analyses modulating protocol definition.
-            \item Estimand: $E\left[Y^{r=1,\bar{a}=1}\right]-E\left[Y^{r=0,\bar{a}=0}\right]$ at 48 weeks %and 96 weeks. 
+            \item Estimand: $E\left[Y^{r=1,\bar{a}=1}\right]-E\left[Y^{r=0,\bar{a}=0}\right]$ at 48 weeks %and 96 weeks.
+            \item Per-protocol analyses modulating $\bar{a}$.
+            \item Protocol will depend on number of doses missed
         \end{itemize}
         \vspace{0.5cm}
-        Outcomes: Composite Virologic Failure and all-cause mortality:
+        Outcomes: Composite virologic failure and all-cause mortality:
         \note{The ACTG 5202 study was a phase 3 trial throughout the US and Puerto Rico. The findings were published in 2009 and then in 2011
         \begin{itemize}
             \item We reanalyzed this data with the goal to evaluate treatment effects in under multiple protocol definitions to estimate treatment efficacy in the population of HIV+ person in the United states. 
@@ -453,7 +450,7 @@ Within the past week & \\
 \resizebox{\textwidth}{!}{
 \begin{tabular}{ll}
     \hline
-    \textbf{Adherence Definition} & \textbf{Definition of Variable} \\
+    \textbf{Protocol Definition} & \textbf{Description of Protocol} \\
 
     0 dose missed OK & No report of missed medication doses \\
 
@@ -562,6 +559,17 @@ We defined protocol deviation, illustrated in the bottom table,  by how many mis
 Our future directions are to also complete this analysis using the g-formula, and also consider additional granular data once the ACTG provides us with an updated data set}
     \end{frame}
 
+ \section{Closing Remarks}
+\begin{frame}{Takeaways}
+\begin{itemize}
+\item Per protocol analysis should be treated like an observational analysis.
+\item Time varying analysis needs to be accounted for.
+\item There are many ways protocols can be defined.
+\item The way protocol is defined can have meaningful impacts on estimates.
+\end{itemize}
+
+\end{frame}
+
     
  \begin{frame}
     {\Huge Thank you!}
@@ -596,7 +604,7 @@ Our future directions are to also complete this analysis using the g-formula, an
      \note{Thank you for your time. Id like to acknowledge the Steve Cole, the cole lab, Paul Zivich, Catherine Li and all the participants of the ACTG 5202 study whom without their participation this work would not be possible.} 
 \end{frame}
 
-\section{Appendix}
+\section*{Appendix}
 \begin{frame}{Outcome Definition}
  \begin{itemize}
          \item plasma HIV-1 RNA level $\geq$1000 copies /mL between 16 weeks and 24 weeks

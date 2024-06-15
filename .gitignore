@@ -9,3 +9,6 @@
 *.toc
 *.DS_Store
 EPID_travel_auth_Feeney.pdf
+SER_2024_per_protocol_present_orig.pdf
+.gitignore
+SER_2024_per_protocol.pdf
