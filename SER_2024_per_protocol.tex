@@ -20,6 +20,14 @@
 \setbeameroption{show notes on second screen=right}
 %\setbeameroption{show only notes}
 
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+
 %\usetikzlibrary{external}
 %\tikzexternalize 
 %load options
@@ -88,12 +96,11 @@ SER June 20 2024}
             \item Require clear enrollment criteria
             \item Unabmiguous intervention protocol
             \item Exchangeability: $Y^a \upmodels A $ \hspace{0.5cm}for $A \in \{0,1\}$  
-            \item Consistency\footnotemark[1]: $Y=Y^{a=1}A+Y^{a=0}(1-A )$
-            \item Positivity\footnotemark[2]: $Pr(A=a \mid \mathbf{L})>0$, $\forall \mathbf{\ell}$ where $f(a, \ell)>0$
+            \item Consistency: $Y=Y^{a=1}A+Y^{a=0}(1-A)$
+            \item Positivity\footnotemark[1]: $Pr(A=a)>0$, $\forall \mathbf{\ell}$ where $f(a)>0$
             \item[\ding{43}] This allows for unbiased estimation of treatment effects.
         \end{itemize}
-        \footnotetext[1]{also known as treatment variation irrelevance}
-        \footnotetext[2]{$\mathbf{L}$ is covariate vector}  
+        \footnotetext[1]{$\mathbf{L}$ is covariate vector}  
         \note{\begin{itemize}
         \item RCTs are classically considered the gold standard in evaluating treatment effects. The status of RCTs originates from aspects of the design that help assure causal estimates are identified
         \item Some of these included clear enumeration of the population unders study, clearly laid out treatment protocols, and other causal identification criteria of marginal exchangeability, causal consistency and positivity being met by design.
@@ -102,22 +109,68 @@ SER June 20 2024}
 
     \begin{frame}{RCT estimands}
         \begin{itemize}
-            \item Intention-to-treat (ITT) effect: $E[Y^{r=1}-Y^{r=0}]$
+            \item Intention-to-treat (ITT) effect: $E[Y^{r=1}]-E[Y^{r=0}]$
             \item This is the effect of treatment assignment on outcomes
             \item Public health focused
             \vspace{1cm}
-            \item Per-protocol (PP) effect: $E[Y^{r=1, \bar{a}=1}-Y^{r=0, \bar{a}=0}]$
+            \item \textit{Typical} Per-protocol (PP) effect: $E[Y^{r=1, \bar{a}=1}]-E[Y^{r=0, \bar{a}=0}]$
             \item This is the effect of treatment assignment and adherence on outcomes
             \item Patient focused\footnotemark[1]
         \end{itemize}
+        \blfootnote{$r =$ randomization; $\bar{a}=$ history of treatment adherence} 
         \footnotetext[1]{Hernan and Robins, NEJM 2016}
-        \footnotetext[2]{$\bar{a}$ is the history of treatment adherence}
         \note{
         \begin{itemize}
         \item There are two commonly reported estimands in an RCT. The primary result reported is typically the intention-to-treat results which present the outcomes had everyone been assigned to treatment 1 versus everyone being assigned to treatment 0. 
         \item However, while this is public health focused, it is limited to evaluating the effect of randomization and not the effect of treatment.
         \item Instead, decision makers (e.g. physician) and those on the receiving end of the treatment may want to know instead waht is the effect if adherent to the treatment assignment. This cannot be answered with the ITT estimand and instead requires a per-protocol analysis that takes into account deviation or loss to follow up.
     \end{itemize}}
+    \end{frame}
+
+    \begin{frame}{Per-protocol effects can be biased}
+        \begin{columns}
+            \begin{column}{0.4\textwidth} 
+        \begin{itemize}
+            \item Frequently done by excluding those not adhering\footnotemark[1]
+            \item[\ding{43}] Susceptible to selection bias 
+        \end{itemize}
+        \footnotetext[1]{Cole \textit{et al.} JAMA Net. Open 2023, Dodd \textit{et al.} Trials 2012}
+    \end{column}
+
+    \begin{column}{0.6\textwidth}   
+         \begin{center}
+            \resizebox{\textwidth}{!}{% 
+        \begin{tikzpicture}
+            \node (1) {\textbf{Randomization}};
+            \node [right =of 1, text width=2.5cm] (2) {\textbf{Treatment Adherence}};
+            \node [right =of 2] (3)  {\textbf{Outcome}};
+            \node [above =of 1] (5) {$\textbf{L}$};
+            \node [rectangle, draw, below =of 2] (6){\textbf{Selection}};
+            
+            \draw[Arrow] (1) to (2);
+            \draw[Arrow] (5) to (2);
+            \draw[Arrow] (5) to [out=0, in=155] (3);
+            \draw[Arrow] (2) to (6);
+        \end{tikzpicture}
+            }
+    \end{center}
+
+    \vspace{0.4cm}
+    $\textbf{L}$ : vector of covariates\\
+
+    Can be addresed: e.g with inverse probability weighting (see next talk)
+    \end{column}
+\end{columns} 
+    \note{
+        \begin{itemize}
+            \item Per protocol effects are typically estimated by excluding those that deviate from the protocol
+            \item However, these estimates should be thought of more like analyzing an observational study where common causes of the outcome of interest and adherence should be accounted for--this has been well reported since 2001 by Robins and Finkelstein
+            \item As a result of this per protocol estimates can be biased.
+            \item Here is a simple DAG illustrating the problem. If per protocol analyses are done where only those who adhere are included you create a selection bias. 
+            \item Here this is by conditioning on a selection which is downstream of a collider, treatment adherence.
+            \item However instead of restricting to only those that adhere there are ways around this which will be covered by the other speakers.
+        \end{itemize} 
+    }
     \end{frame}
 
   
@@ -128,8 +181,8 @@ SER June 20 2024}
             \begin{itemize}
                 \item Accounts for adherence
                 \item "Doc, what if I take all my doses like you tell me to?"
-                \item There are six per-protocol parameters that can be estimated\footnotemark[1]
-                \item This can also depend on how the investigator(s) define adherence.
+                \item There are \textit{at least} 6 per-protocol parameters that can be estimated\footnotemark[1]
+                \item There are also $k\in\{1,\ldots,\infty\}$ protocols depend on how the investigator(s) define adherence.
             \end{itemize}
         \end{column}
         \begin{column}{0.4\textwidth}
@@ -154,50 +207,8 @@ SER June 20 2024}
         \end{itemize}
        }
     \end{frame}
-
-    \begin{frame}{Per-protocol effects can be biased}
-        \begin{itemize}
-            \item Frequently done by exluding those not adhering\footnotemark[1]
-            \item Estimation of the per-protocol effect is much like an \textit{observational study}
-            \item Thus, bias can arise from non-exchangeability, non-consistency, or non-positivity 
-            \item[\ding{43}] This can lead to biased estimates 
-        \end{itemize}
-        \footnotetext[1]{Cole \textit{et al.} JAMA Net. Open 2023, Dodd \textit{et al.} Trials 2012}
-        \note{
-            \begin{itemize}
-                \item Per protocol effects are typically estimated by excluding those that deviate from the protocol
-                \item However, these estimates should be thought of more like analyzing an observational study where common causes of the outcome of interest and adherence should be accounted for--this has been well reported since 2001 by Robins and Finkelstein
-                \item As a result of this per protocol estimates can be biased. 
-            \end{itemize}   
-                }
-    \end{frame}
-    
-    \begin{frame}{Per-protocol effects can be biased}
-         \begin{center}
-        \begin{tikzpicture}
-            \node (1) {\textbf{Randomization}};
-            \node [right =of 1, text width=2.5cm] (2) {\textbf{Treatment Adherence}};
-            \node [right =of 2] (3)  {\textbf{Outcome}};
-            \node [above =of 1] (5) {$\mathbb{X}$};
-            \node [rectangle, draw, below =of 2] (6){\textbf{Selection}};
-            
-            \draw[Arrow] (1) to (2);
-            \draw[Arrow] (5) to (2);
-            \draw[Arrow] (5) to [out=0, in=155] (3);
-            \draw[Arrow] (2) to (6);
-        \end{tikzpicture}
-    \end{center}
-
-    Can be addresed: inverse probability weighting (IPW), the g-formula, TMLE, can be used to account for selection bias (see next talk)
-    \footnotetext{$\mathbb{X}$ : vector of covariates}
-    \note{
-        \begin{itemize}
-            \item Here is a simple DAG illustrating the problem. If per protocol analyses are done where only those who adhere are included you create a selection bias. 
-            \item Here this is by conditioning on a selection which is downstream of a collider, treatment adherence.
-            \item However instead of restricting to only those that adhere there are ways around this which will be covered by the other speakers.
-        \end{itemize} 
-    }
-    \end{frame}
+       
+   
   
     \begin{frame}{Per Protocol Causal Identification}
         \begin{itemize}
@@ -222,56 +233,57 @@ SER June 20 2024}
             \end{itemize}
         }
         \end{frame}
-\begin{frame}{More on Protocol Definition}
-\centering
-\begin{tikzpicture}
-    % Draw x and y axis
-    \draw[-] (0,0) -- (5.3,0) ; % Draw x-axis up to 5
-    \draw[->] (0,0) -- (0,6) node[above] {Protocols};
 
-    % Draw x axis labels
-    \foreach \x in {1,2,...,5}
-        \draw (\x,0.1) -- (\x,-0.1) node[below] {\x};
+% \begin{frame}{More on Protocol Definition}
+% \centering
+% \begin{tikzpicture}
+%     % Draw x and y axis
+%     \draw[-] (0,0) -- (5.3,0) ; % Draw x-axis up to 5
+%     \draw[->] (0,0) -- (0,6) node[above] {Protocols};
 
-    % Draw y axis labels
-    \foreach \y in {5,4,...,1}
-        \draw (-0.1,\y) -- (0.1,\y) node[left] {\y};
+%     % Draw x axis labels
+%     \foreach \x in {1,2,...,5}
+%         \draw (\x,0.1) -- (\x,-0.1) node[below] {\x};
 
-    % Draw lines for individuals
-    \draw (0,1) -- (5,1);
-    \draw (0,2) -- (4,2);
-    \draw (0,3) -- (3,3);
-    \draw (0,4) -- (2,4);
-    \draw (0,5) -- (1,5);
+%     % Draw y axis labels
+%     \foreach \y in {5,4,...,1}
+%         \draw (-0.1,\y) -- (0.1,\y) node[left] {\y};
 
-    % Draw censor marks 
-    \node at (1,5) {$>$};
-    \node at (2,4) {$>$};
-    \node at (3,3) {$>$};
-    \node at (4,2) {$>$};
-    \node at (5,1) {$>$};
+%     % Draw lines for individuals
+%     \draw (0,1) -- (5,1);
+%     \draw (0,2) -- (4,2);
+%     \draw (0,3) -- (3,3);
+%     \draw (0,4) -- (2,4);
+%     \draw (0,5) -- (1,5);
 
-    % Add a small discontinuity on the x axis
-    \draw[thick] (5.3,0.1) -- (5.4,-0.1);
-    \draw[thick] (5.4,0.1) -- (5.5,-0.1);
+%     % Draw censor marks 
+%     \node at (1,5) {$>$};
+%     \node at (2,4) {$>$};
+%     \node at (3,3) {$>$};
+%     \node at (4,2) {$>$};
+%     \node at (5,1) {$>$};
 
-    % Draw the rest of the x-axis with a gap
-    \draw[->] (5.5,0) -- (6.5,0);
+%     % Add a small discontinuity on the x axis
+%     \draw[thick] (5.3,0.1) -- (5.4,-0.1);
+%     \draw[thick] (5.4,0.1) -- (5.5,-0.1);
 
-    % Add infinity symbol on the x axis
-    \node at (7.3, 0) {$\infty$ Doses};
-    \node at (6, -0.4) {};
-    \node at (3.5, -1) {Doses allowed};
-\end{tikzpicture}
-\note{
-    \begin{itemize}
-        \item Before I mentioned that there is both no one protocol, but also that this definition can be modulated; This figure attempts to illustrate this point.
-        \item On the x-axis there are the number of doses allowed before the protocol has been violated and censoring occurs. The ITT analysis would be infinite number of doses, becuase the only thing that matters is randomization assignment.
-        \item Person one is allowed to miss 4 doses and on the 5th missed dose or treatment they are censored. Other protocols are still possible, for instance protocol 2 only allows 3 missed doses and porotocl 5 allows none, and a participant is censored as soon as they miss one dose.
-        \item We will use this approach in the example I will highlight next
-    \end{itemize}
-}
-\end{frame}
+%     % Draw the rest of the x-axis with a gap
+%     \draw[->] (5.5,0) -- (6.5,0);
+
+%     % Add infinity symbol on the x axis
+%     \node at (7.3, 0) {$\infty$ Doses};
+%     \node at (6, -0.4) {};
+%     \node at (3.5, -1) {Doses allowed};
+% \end{tikzpicture}
+% \note{
+%     \begin{itemize}
+%         \item Before I mentioned that there is both no one protocol, but also that this definition can be modulated; This figure attempts to illustrate this point.
+%         \item On the x-axis there are the number of doses allowed before the protocol has been violated and censoring occurs. The ITT analysis would be infinite number of doses, becuase the only thing that matters is randomization assignment.
+%         \item Person one is allowed to miss 4 doses and on the 5th missed dose or treatment they are censored. Other protocols are still possible, for instance protocol 2 only allows 3 missed doses and porotocl 5 allows none, and a participant is censored as soon as they miss one dose.
+%         \item We will use this approach in the example I will highlight next
+%     \end{itemize}
+% }
+% \end{frame}
 
 \section{Example using ACTG 5202 Trial}
 
@@ -286,97 +298,88 @@ SER June 20 2024}
 
 \begin{frame}{Role of adherence in HIV treatment efficacy}
     \begin{columns}
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.45\textwidth}
         \begin{itemize}
-            \item Adherence needed for viral suppression varies by treatment regimen.
-            \item Blanket recommendations fail to capture differences.
+            \item Adherence needed for HIV viral suppression varies by treatment regimen.
+            \item Blanket recommendations fail.
             \item[\ding{43}] Understanding of how adherence impacts efficacy is \textit{critical}\footnotemark[1] for:
             \begin{itemize}
                 \item Developing new treatments.
                 \item Maximizing current treatments.
             \end{itemize}
         \end{itemize}
+        \footnotetext[1]{\tiny Adimora, Cole and Eron CID 2017}
     \end{column}
 % Column 2
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.55\textwidth}
     \begin{figure}
         \centering
-        \includegraphics[scale=0.060]{figs/fig2.png}
+        \includegraphics[scale=0.0750]{figs/fig2.png}
         \caption*{}
         \label{fig:fig2}
     \end{figure}
     \end{column}
 \end{columns}
-\footnotetext[1]{\tiny Adimora, Cole and Eron CID 2017}
+
 \note{The efficacy of HIV treatments depends both on the mechanism of the medication and the adherence to a dosing scheme. In general it is not possible to make a blanket statement that any number of missed doses per time-frame is ok or not. Thus evaluating adherence in in terms of doses taken should be considered.} 
 \end{frame}   
 
     \subsection{Population}
-    \begin{frame}{Example: ACTG 5202 Reanalysis}
-        Overview:
-            \begin{itemize}
-                \item Phase 3b RCT
-                \item 59 sites, US and Puerto Rico
-            \end{itemize}
-            Objective:
-        \begin{itemize}
-            \item Per-protocol analysis modulating protocol definition.
-            \item Target population: The population of HIV+ individuals in the United States
-            \item Estimand: $E\left[Y^{r=1,\bar{a}=1}\right]-E\left[Y^{r=0,\bar{a}=0}\right]$ at 48 and 96 weeks
-        \end{itemize}
-        Outcomes: Virologic Failure defined as:
-        \begin{itemize}
-         \item plasma HIV-1 RNA level $\geq$1000 copies /mL between 16 weeks and 24 weeks
-         \item or $\geq$200 copies/mL at or after 24 weeks
-        \end{itemize} 
-        \note{The ACTG 5202 study was a phase 3 trial throughout the US and Puerto Rico. The findings were published in 2009 and then in 2011
-        \begin{itemize}
-            \item We reanalyzed this data with the goal to evaluate treatment effects in under multiple protocol definitions to estimate treatment efficacy in the population of HIV+ person in the United states. 
-            \item We aimed to estimate a 48 and 96 week risk difference. 
-        \end{itemize}
-        }
-    \end{frame}
+
 
 \begin{frame}{ACTG 5202 Study Population}
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{llllll}
-        \toprule
-        \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{ABC/3TC} & \multicolumn{2}{c}{TDF/FTC} \\
-        \cmidrule(l{3pt}r{3pt}){3-4} \cmidrule(l{3pt}r{3pt}){5-6}
-         &  & +ATV & +EFV & +ATV & +EFV\\
+    Phase 3b RCT at 59 sites, US and Puerto Rico
+    \vspace{0.3cm}
+    \resizebox{\textwidth}{!}{% 
+    \begin{tabular}{lll}
+         & ABC/3TC & TDF/FTC\\
         \midrule
-        n &  & 463 & 465 & 465 & 464\\
+        N & 928 & 929\\
         \addlinespace[0.1cm]\\
-         Female (\%)  &  & 75 (16.2) & 98 (21.1) & 78 (16.8) & 71 (15.3)\\
+        Male at birth \% & 81.4 & 84.0\\
         \addlinespace[0.1cm]
-        Age Group (\%)&&&&&\\
-         \quad 0-25 year &  & 51 (11.0) & 43 (9.2) & 52 (11.2) & 46 (9.9)\\
-         \quad 25-49 years&  & 353 (76.2) & 362 (77.8) & 339 (72.9) & 356 (76.7)\\
-         \quad $\geq 50$ years &  & 59 (12.7) & 60 (12.9) & 74 (15.9) & 62 (13.4)\\
+        Age Group \% & & \\
+        \quad$\leq25$& 10.1 & 10.5\\
+        \quad 26-49& 77.0& 74.8\\
+        \quad$\geq50$ & 12.8 &14.6\\
         \addlinespace[0.1cm]
-        Baseline log RNA (med [IQR]) &  & 4.64 [4.31, 5.14] & 4.68 [4.34, 4.96] & 4.65 [4.31, 5.05] & 4.65 [4.35, 4.91]\\
+        Baseline log$_{10}$ RNA copies/mL(med [IQR]) & 4.66 [4.31, 5.06] & 4.65 [4.34, 4.96]\\
         \addlinespace[0.1cm]
-        Baseline CD4 (med [IQR]) &  & 236 [73, 345] & 225 [103, 324] & 224 [87, 327] & 233 [104, 334]\\
+        Baseline CD4 count/mL (med [IQR]) & 229 [84, 338] & 230 [97, 330]\\
         \addlinespace[0.1cm]
-        AIDS Hx (\%) &  & 84 (18.1) & 88 (18.9) & 69 (14.8) & 71 (15.3)\\
         \bottomrule
         \end{tabular}
     }
-    \note{participants were Randomized 1:1:1:1 to
-    \begin{itemize}
-        \item 
+    \note{Phase 3 RCT in 59 sites in the US and Puerto Rico participants Randomized 1:1  TDF/FTC or ABC/3TC
+  
+    \begin{itemize} 
         \item TDF/FTC + (EFV or ATV/r) + ABC/3TC placebo
         \item ABC/3TC + (EFV or ATV/r) + TDF/FTC placebo
         \item Stratified by HIV-1 RNA screening level of
         \item $< 100,000$
         \item or  $\geq 100,000$ 
-    \end{itemize}
-        }
+    \end{itemize}}
 \end{frame}
+
+    \begin{frame}{Example: ACTG 5202 Reanalysis}
+            Objective:
+        \begin{itemize}
+            \item Per-protocol analyses modulating protocol definition.
+            \item Estimand: $E\left[Y^{r=1,\bar{a}=1}\right]-E\left[Y^{r=0,\bar{a}=0}\right]$ at 48 weeks %and 96 weeks. 
+        \end{itemize}
+        \vspace{0.5cm}
+        Outcomes: Composite Virologic Failure and all-cause mortality:
+        \note{The ACTG 5202 study was a phase 3 trial throughout the US and Puerto Rico. The findings were published in 2009 and then in 2011
+        \begin{itemize}
+            \item We reanalyzed this data with the goal to evaluate treatment effects in under multiple protocol definitions to estimate treatment efficacy in the population of HIV+ person in the United states. 
+            \item We aimed to estimate the risk difference at 48 weeks %and 96 weeks. 
+        \end{itemize}
+        }
+    \end{frame}
 
 \subsection{Analysis Plan}
 
-\begin{frame}{Identification Reminder with DAG}
+\begin{frame}{DAG}
     \begin{figure}
     \centering
        \resizebox{0.95\textwidth}{!}{
@@ -418,7 +421,10 @@ SER June 20 2024}
        \end{figure}
 $j$: follow up time, $\mathbf{L_j}$: vector of covariates at follow up time $j$\\
 
-$A_j$: tx adherence at follow up time $j$, $R$: randomization, $Y$: viral failure or death        
+$A_j$: tx adherence at follow up time $j$, $R$: randomization, $Y$: viral failure or death       
+\note{A simplified DAG illustrates our assumptions. We are assuming that randomization to treatment impacts adherence, and that baseline covariate values and covariate values at the preceeding time point also impacts adherence and the outcome.\\
+\vspace{0.5cm}
+we will use IPW in the analysis here to account for these factors that leads to differences in adherence and the outcome} 
    \end{frame}
 
 \begin{frame}{Adherence and Protocol}
@@ -458,7 +464,10 @@ Within the past week & \\
     \hline
 \end{tabular}
 }
-\end{table} 
+\end{table}
+\note{Adhrence in ACTG 5202 was collecetd by self report and whether or not there were missed doses within a previous time frame. There was also information about how closesly a dosing regimen was followed but we did not incorporate that here.\\
+\vspace{0.5cm}
+We defined protocol deviation, illustrated in the bottom table,  by how many missed doses were acceptable. For instance if 0 doses missed were OK, then as soon as a person reported missing any doses they were censored. For those where missing 4 doses was ok, as soon as they missed the fifth dose they were censored.} 
 \end{frame}
 
 
@@ -476,28 +485,41 @@ Within the past week & \\
         \bottomrule
         \end{tabular}
     }
+    \note{As might be expected as the definition of protocol deviation becomes more strict, requiring more missed doses to be censored, there is a decrease in the number of participants deviating from the protocol. This goes from 276 in the ABC arm and 263 in the TDF arm for the 1 dose protocol down to 7 in each arm under the 5 dose protocol definition.}
 \end{frame}
+
+
 
 \begin{frame}
     \begin{figure}[H] 
         \centering
-        \includegraphics[width=\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/tvary_censor_surv.png} 
-
-        \caption*{} 
-        \label{fig:cens_surv} % Add a label for referencing the figure
-    \end{figure}
-
-\end{frame}
-
-\begin{frame}
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/tvary_multi_surv.png} 
+        \includegraphics[width=\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/ser_surv1.png} 
 
         \caption*{} 
         \label{fig:mutli_surv} % Add a label for referencing the figure
     \end{figure}
+    \note{now we turn our attention to the risk of viral failure and death. There are two notable findings here. 
+    \begin{enumerate}
+        \item the absolute risk of an outcome in both arms under the 1 dose missed protocol is lower suggesting higher risk people are missing 1 dose of medication. 
+        \item There is a smaller difference in the risk when accounting for 1 dose protocol deviation. This is a bit harder to see here, but will become a little more apparent on the next slide.
+    \end{enumerate}}
 \end{frame}
+
+\begin{frame}
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/ser_surv2.png} 
+
+        \caption*{} 
+        \label{fig:mutli_surv} % Add a label for referencing the figure
+    \end{figure}
+    \note{now we turn our attention to the risk of viral failure and death. There are two notable findings here. 
+    \begin{enumerate}
+        \item the absolute risk of an outcome in both arms under the 1 dose missed protocol is lower suggesting higher risk people are missing 1 dose of medication. 
+        \item There is a smaller difference in the risk when accounting for 1 dose protocol deviation. This is a bit harder to see here, but will become a little more apparent on the next slide.
+    \end{enumerate}}
+\end{frame}
+
 
 \begin{frame}
      \begin{figure}[H] 
@@ -505,17 +527,18 @@ Within the past week & \\
             \includegraphics[width=0.95\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/tvary_wk48_forest.png} 
             \caption*{} 
             \label{fig:48wk_forest} % Add a label for referencing the figure
-     \end{figure} 
+     \end{figure}
+     \note{here we can see the risk differences and 95\% confidence intervals based on robust standard errors. As expected as we censored individuals the standard error increased. The changes in the risk difference become more apparent with smaller risk differences when accounting for 1 and 2 dose deviations. This suggest the efficacy of the TDF versus ABC is not quite as large as you might expect if you relied only on a naive analysis.} 
 \end{frame}
 
-\begin{frame}
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.95\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/tvary_wk96_forest.png} 
-        \caption*{} 
-        \label{fig:96wk_forest} % Add a label for referencing the figure
-    \end{figure}  
-\end{frame}
+% \begin{frame}
+%     \begin{figure}[H] 
+%         \centering
+%         \includegraphics[width=0.95\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/tvary_wk96_forest.png} 
+%         \caption*{} 
+%         \label{fig:96wk_forest} % Add a label for referencing the figure
+%     \end{figure}  
+% \end{frame}
     
  
  \subsection{Limitations and Future}
@@ -530,7 +553,13 @@ Within the past week & \\
     \end{enumerate}
 \footnotetext[1]{Approved for more granular data from ACTG, awaiting dataset}
 \footnotetext[2]{NB: not guaranteed in per-protocol setting even though it is a trial}
-
+\note{This is a work in progress and There were some limitations.
+\begin{enumerate}
+    \item this analysis was completed with public data. We have approval from ACTG to obtain more granular data and we will update our results with that
+    \item currently this analysis relied on coarse data on adherence and I am currently working to improved estimates of the number of doses that people actually missed.
+    \item we assume that we have met all the required identification condigions based on covariates in the IPW models.
+\end{enumerate}
+Our future directions are to also complete this analysis using the g-formula, and also consider additional granular data once the ACTG provides us with an updated data set}
     \end{frame}
 
     
@@ -563,7 +592,28 @@ Within the past week & \\
            \end{figure} 
        \end{column} 
         
-     \end{columns} 
+     \end{columns}
+     \note{Thank you for your time. Id like to acknowledge the Steve Cole, the cole lab, Paul Zivich, Catherine Li and all the participants of the ACTG 5202 study whom without their participation this work would not be possible.} 
+\end{frame}
+
+\section{Appendix}
+\begin{frame}{Outcome Definition}
+ \begin{itemize}
+         \item plasma HIV-1 RNA level $\geq$1000 copies /mL between 16 weeks and 24 weeks
+         \item or $\geq$200 copies/mL at or after 24 weeks
+         \item  all cause mortality
+        \end{itemize} 
+\end{frame}
+
+\begin{frame}{Censoring Risk}
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=\textwidth]{/Users/timf/Library/CloudStorage/OneDrive-UniversityofNorthCarolinaatChapelHill/Dissertation/DissertationAnalysis/Aim 2/results/figures/tvary_censor_surv.png} 
+
+        \caption*{} 
+        \label{fig:cens_surv} % Add a label for referencing the figure
+    \end{figure}
+\note{here are risk curves for censoring and censoring +protocol deviation. The black line shows only the risk for loss to follow up and there is little difference between the two arms. The red line shows a similar pattern that overlaps closely with the censoring arm. We would expect the more doses required to be missed to approximate the censoring arm. However, if you look at the yellow line the overall risk of being censorid is higher and there is a slightly higher risk in the ABC arm versus the TDF arm in the later time points.}
 \end{frame}
 
 
