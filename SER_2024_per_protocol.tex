@@ -361,11 +361,20 @@ SER June 19 2024}
             Objective:
         \begin{itemize}
             \item Estimand: $E\left[Y^{r=1,\bar{a}=1}\right]-E\left[Y^{r=0,\bar{a}=0}\right]$ at 48 weeks %and 96 weeks.
-            \item Per-protocol analyses modulating $\bar{a}$.
+            \item Modulating treatment protocol $\bar{a}$.
             \item Protocol will depend on number of doses missed
         \end{itemize}
-        \vspace{0.5cm}
-        Outcomes: Composite virologic failure and all-cause mortality:
+        \vspace{0.4cm}
+        Outcomes: Composite virologic failure and all-cause mortality
+        \vspace{0.4cm}
+        Methods: IPW analysis accounting for:
+            \begin{itemize}
+                        \item Age, Sex, Ethnicity
+                        \item Baseline CD4
+                        \item Baseline HIV RNA and screening RNA
+                        \item Time varying CD4
+                        \item Time varying HIV RNA
+            \end{itemize}
         \note{The ACTG 5202 study was a phase 3 trial throughout the US and Puerto Rico. The findings were published in 2009 and then in 2011
         \begin{itemize}
             \item We reanalyzed this data with the goal to evaluate treatment effects in under multiple protocol definitions to estimate treatment efficacy in the population of HIV+ person in the United states. 
@@ -381,14 +390,14 @@ SER June 19 2024}
     \centering
        \resizebox{0.95\textwidth}{!}{
            \begin{tikzpicture}
-   \node [inner sep=0.1mm](a0) at (-3.281,0.386) {${A_0}$};
-   \node [inner sep=0.1mm](a1) at (-1.874,0.386) {$A_1$};
-   \node[inner sep=0.1mm] (a2) at (-0.348,0.386) {$A_2$};
+   \node [inner sep=0.1mm](a0) at (-3.281,0.386) {${C_0}$};
+   \node [inner sep=0.1mm](a1) at (-1.874,0.386) {$C_1$};
+   \node[inner sep=0.1mm] (a2) at (-0.348,0.386) {$C_2$};
    \node (l0) at (-3.757,1.956) {$\boldsymbol{L_0}$};
    \node[inner sep=0.1mm] (l1) at (-1.900,1.611) {$\boldsymbol{L_1}$};
    \node [inner sep=0.1mm] (l2) at (-0.342, 1.194) {$\boldsymbol{L_2}$};
     \node (r) at (-4.529,0.386) {$R$};
-    \node (a3) at (1.3,0.386) {$A_3$};
+    \node (a3) at (1.3,0.386) {$C_3$};
      \node (y2) at (3,0.386) {$Y$};
 
    \draw [Arrow] (r) to (a0);
@@ -418,7 +427,7 @@ SER June 19 2024}
        \end{figure}
 $j$: follow up time, $\mathbf{L_j}$: vector of covariates at follow up time $j$\\
 
-$A_j$: tx adherence at follow up time $j$, $R$: randomization, $Y$: viral failure or death       
+$C_j$: tx adherence at follow up time $j$, $R$: randomization, $Y$: viral failure or death       
 \note{A simplified DAG illustrates our assumptions. We are assuming that randomization to treatment impacts adherence, and that baseline covariate values and covariate values at the preceeding time point also impacts adherence and the outcome.\\
 \vspace{0.5cm}
 we will use IPW in the analysis here to account for these factors that leads to differences in adherence and the outcome} 
@@ -546,7 +555,7 @@ We defined protocol deviation, illustrated in the bottom table,  by how many mis
         \item Completed with public access data\footnotemark[1]
         \item Reliance on coarse, self-reported medication adherence
         \item Assume identification conditions met.\footnotemark[2]
-        \item Future directions include repeating analysis with g-formula, considering additional protocols. 
+        \item Future directions include repeating analysis with g-formula, considering additional protocols, and extending to different diseases. 
     \end{enumerate}
 \footnotetext[1]{Approved for more granular data from ACTG, awaiting dataset}
 \footnotetext[2]{NB: not guaranteed in per-protocol setting even though it is a trial}
