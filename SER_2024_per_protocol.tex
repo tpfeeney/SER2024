@@ -17,7 +17,7 @@
 \usepackage{pgfgantt}
 \usepackage{pgfpages}
 \usepackage{enumerate}
-\setbeameroption{show notes on second screen=right}
+%\setbeameroption{show notes on second screen=right}
 %\setbeameroption{show only notes}
 
 \newcommand\blfootnote[1]{%
@@ -85,7 +85,7 @@ SER June 19 2024}
 
 \begin{frame}{Outline}
             \tableofcontents
-    \note{Today I will be working with other presenters to both explain how per-protocol analyses can facilitate better estimates and also convince you that this is the way forward.\\
+    \note{Today I will be working with other presenters to both explain how per-protocol analyses can facilitate better estimates and also convince you that this is better than the status quo.\\
     \vspace*{.5cm} 
     Ill start with background about RCTs, define per protocol effects, and then finish up with an example.}
 \end{frame}
@@ -97,42 +97,43 @@ SER June 19 2024}
             \item Unabmiguous intervention protocol.
             \item Exchangeability: $Y^a \upmodels A $ \hspace{0.5cm}for $A \in \{0,1\}$  
             \item Consistency: $Y=Y^{a=1}A+Y^{a=0}(1-A)$
-            \item Positivity\footnotemark[1]: $Pr(A=a)>0$
+            \item Positivity: $Pr(A=a)>0$
             \item[\ding{43}] This allows for unbiased estimation of treatment effects.
-        \end{itemize} 
+        \end{itemize}
+        \blfootnote{$Y^a =$ counterfactual outcome under treatment $A = a$, $Y =$ observed outcome, $A =$ treatment} 
         \note{\begin{itemize}
-        \item RCTs are classically considered the gold standard in evaluating treatment effects. The status of RCTs originates from aspects of the design that help assure causal estimates are identified
-        \item Some of these included clear enumeration of the population unders study, clearly laid out treatment protocols, and other causal identification criteria of marginal exchangeability, causal consistency and positivity being met by design.
-    \end{itemize}} 
+            \item RCTs are classically considered the gold standard in evaluating treatment effects. This status for RCTs originates in aspects of the design that help assure causal estimates are identified
+            \item Some of these included clear enumeration of the population under study, clearly laid out treatment protocols, and meeting the other causal identification criteria of marginal exchangeability, causal consistency and positivity being met by design.
+        \end{itemize}} 
     \end{frame}
 
     \begin{frame}{RCT estimands}
         \begin{itemize}
             \item Intention-to-treat (ITT) effect: $E[Y^{r=1}]-E[Y^{r=0}]$
-            \item This is the effect of treatment assignment on outcomes
-            \item Public health focused
+            \item This is the effect of treatment assignment on outcomes.
+            \item Public health focused.
             \vspace{1cm}
             \item \textit{Typical} Per-protocol (PP) effect: $E[Y^{r=1, \bar{a}=1}]-E[Y^{r=0, \bar{a}=0}]$
-            \item This is the effect of treatment assignment and adherence on outcomes
-            \item Patient focused\footnotemark[1]
+            \item This is the effect of treatment assignment and adherence on outcomes.
+            \item Patient focused.\footnotemark[1]
         \end{itemize}
-        \blfootnote{$R =$ randomization; $\bar{a}=$ history of treatment} 
+        \blfootnote{$R =$ randomization; $\bar{A}=$ history of treatment} 
         \footnotetext[1]{Hernan and Robins, NEJM 2016}
         \note{
-        \begin{itemize}
-        \item There are two commonly reported estimands in an RCT. The primary result reported is typically the intention-to-treat results which present the outcomes had everyone been assigned to treatment 1 versus everyone being assigned to treatment 0. 
-        \item However, while this is public health focused, it is limited to evaluating the effect of randomization and not the effect of treatment.
-        \item Instead, decision makers (e.g. physician) and those on the receiving end of the treatment may want to know instead waht is the effect if adherent to the treatment assignment. This cannot be answered with the ITT estimand and instead requires a per-protocol analysis that takes into account deviation or loss to follow up.
-    \end{itemize}}
+            \begin{itemize}
+                \item There are two commonly reported estimands in an RCT. The primary estimand reported is the intention-to-treat result, which presents the marginal effect of randomization to treatment. 
+                \item However, while this is public health focused, it is limited to evaluating the effect of randomization and not the effect of treatment.
+                \item Instead, decision makers (e.g. physicians) and those on the receiving end of the treatment may want to know the effect if adherent to the treatment assignment. This cannot be answered with the ITT estimand and instead requires a per-protocol analysis that takes into account protocol deviation or loss to follow up.
+            \end{itemize}}
     \end{frame}
 
     \begin{frame}{Per-protocol effects can be biased}
         \begin{columns}
             \begin{column}{0.4\textwidth} 
         \begin{itemize}
-            \item Frequently done by excluding those not adhering\footnotemark[1]
-            \item Susceptible to selection bias
-            \item[\ding{43}] Can be addresed: e.g with inverse probability weighting (see next talk) 
+            \item Frequently done by excluding those not adhering.\footnotemark[1]
+            \item Susceptible to selection bias.
+            \item[\ding{43}] Can be addresed: e.g with inverse probability weighting (see next talk). 
         \end{itemize}
     \end{column}
 
@@ -158,13 +159,13 @@ SER June 19 2024}
 \footnotetext[1]{Cole \textit{et al.} JAMA Net. Open 2023, Dodd \textit{et al.} Trials 2012}
 \blfootnote{$\mathbf{L}$ : vector of covariates} 
     \note{
+        While per protocol effects are attractive for the information they provide, there is one main drawback, and that is that these estimates should be thought of more like analyzing an observational study where common causes of the outcome of interest and adherence should be accounted for--this was formalized in 2000 by Robins and Finkelstein, and has been well described, at least in the specialist literature.
         \begin{itemize}
-            \item Per protocol effects are typically estimated by excluding those that deviate from the protocol
-            \item However, these estimates should be thought of more like analyzing an observational study where common causes of the outcome of interest and adherence should be accounted for--this has been well reported since 2001 by Robins and Finkelstein
+            \item Nevertheless, per protocol effects are typically estimated by excluding those that deviate from the protocol
             \item As a result of this per protocol estimates can be biased.
-            \item Here is a simple DAG illustrating the problem. If per protocol analyses are done where only those who adhere are included you create a selection bias. 
-            \item Here this is by conditioning on a selection which is downstream of a collider, treatment adherence.
-            \item However instead of restricting to only those that adhere there are ways around this which will be covered by the other speakers.
+            \item This simple DAG illustrating the problem. If per protocol analyses are done where only those who adhere are included you create a selection bias. 
+            \item By conditioning on a selection which is downstream of a collider, treatment adherence.
+            \item Instead of restricting to only those that adhere there are ways around this which I will touch on and will also be covered by the other speakers.
         \end{itemize} 
     }
     \end{frame}
@@ -174,12 +175,14 @@ SER June 19 2024}
     \begin{frame}{There is no \textit{one} per-protocol effect}
         % \begin{columns}
         % \begin{column}{0.6\textwidth}
-            \begin{itemize}
-                \item Accounts for adherence
-                \item "Doc, what if I take all my doses like you tell me to?"
-                \item There are \textit{at least} 6 per-protocol parameters that can be estimated\footnotemark[1]
-                \item There are also $k \geq 1$ protocols depending on how the investigator(s) define adherence.
-            \end{itemize}
+            Accounts for adherence.\\
+            \vspace{0.3cm}
+             "Doc, what if I take all my doses like you tell me to?"\\
+             \vspace{0.3cm}
+             There are \textit{at least} 6 per-protocol parameters that can be estimated.\footnote{Rudolph \textit{et al.} Epidemiology 2020}\\
+             \vspace{0.3cm}
+             There are also $k \geq 1$ protocols depending on how the investigator(s) define adherence.
+            
         % \end{column}
         % \begin{column}{0.4\textwidth}
         %     $$
@@ -194,115 +197,53 @@ SER June 19 2024}
         %     $$
         % \end{column}
         % \end{columns}
-        \footnotetext[1]{Rudolph \textit{et al.} Epidemiology 2020}
-        \note{However there is no ONE per protocol effect and there are at least 6 estimands that can be considered per protocol effect. They are llustrated here.
+        %\footnotetext[1]{Rudolph \textit{et al.} Epidemiology 2020}
+        \note{However there is no ONE per protocol effect and there are at least 6 estimands that can be considered per protocol effects. 
         \begin{itemize}
             \item For instance if you look at the second line this answers "what if I took my treatment as assigned the whole way through the trial" where as line five asks "what if I did the opposite of what I was assigned the whole way through the trial?"
             \item These estimands can be made even more precise to account for deviating from 1 to many doses--more on this in a bit.  
         \end{itemize}
        }
-    \end{frame}
-       
-   
+    \end{frame} 
   
     \begin{frame}{Per Protocol Causal Identification}
         Let $g$ be a deterministic treatment strategy and overbar denote a history of values
         \begin{itemize}
             \item Conditional Exchangeability: $Y^g \upmodels \left(A_t,C_{t+1}\right) \mid \left(\bar{A}_{t-1}=\bar{a}^g_{t-1}, \bar{L_t}=\bar{\ell_t}, C_t=Y_t=0\right)$ \hspace{0.25cm} $ \forall t$\vspace{1em}
             \item Consistency: if $\bar{A}_{t}=\bar{A}^g_{t}$ then $ \bar{Y}_t=\bar{Y}^g_t$\vspace{1em}
-            \item Positivity:$f(a^g_t, C_t=0\mid\bar{a}^g_{t-1},\bar{\ell}_t,C_t=Y_t=0)>0$ \vspace{1em}
-            \item No missclassification and correct model specification 
+            \item Positivity:$f(a^g_t, C_t=0\mid\bar{a}^g_{t-1},\bar{\ell}_t,C_t=Y_t=0)>0$ \vspace{1em} $\forall t$
+            \item No missclassification and correct model specification.
         \end{itemize}
         \vspace{0.5cm}
-        $Y =$ outcome, $C =$ censoring, $A =$ treatment , $L =$ covariates, $t =$ time point from $0 \ldots t$.
+        \blfootnote{$Y =$ outcome, $C =$ censoring, $A =$ treatment , $L =$ covariates, $t =$ time point.}
         \blfootnote{Wen \textit{et al.} Biometrics 2019}
-        \note{The causal idenfication criteria are slightly modified to account for the treatment regimens described by the trial protocol. This allows for us to take time into account
-            \begin{itemize}
-                \item now we assume that adherence and censoring is independent of an individuals counterfacutal outcome conditional on adherence under a specific treatment regimen at all prior times,and covariate values at all time points
-                \item Consistency is now that your counterfactual outcome for a treatment regimen is the outcome observed under that treatment regimen
-                \item Positivity requires nonzero joint probability of treatment adherence and being uncensored at each time point conditional on covariates
-                \item No interference at each time point.
-                \item and of course no missclassification or model misspecification
+        \note{Before we go further it is useful to briefly cover The causal idenfication criteria, which are slightly modified to account for the treatment regimens described by the trial protocol. This allows for us to take time into account, and you will see these update the identification conditions for each time point. 
+        \begin{itemize}
+            \item now we assume that adherence and censoring is independent of an individuals counterfacutal outcome conditional on adherence under a specific treatment regimen at all prior times,and covariate values at all time points
+            \item Consistency is now that your counterfactual outcome for a treatment regimen is the outcome observed under that treatment regimen
+            \item Positivity requires nonzero joint probability of treatment adherence and being uncensored at each time point conditional on covariates
+            \item No interference at each time point.
+            \item and of course no missclassification or model misspecification
 
-            \end{itemize}
+        \end{itemize}
         }
         \end{frame}
 
-% \begin{frame}{More on Protocol Definition}
-% \centering
-% \begin{tikzpicture}
-%     % Draw x and y axis
-%     \draw[-] (0,0) -- (5.3,0) ; % Draw x-axis up to 5
-%     \draw[->] (0,0) -- (0,6) node[above] {Protocols};
-
-%     % Draw x axis labels
-%     \foreach \x in {1,2,...,5}
-%         \draw (\x,0.1) -- (\x,-0.1) node[below] {\x};
-
-%     % Draw y axis labels
-%     \foreach \y in {5,4,...,1}
-%         \draw (-0.1,\y) -- (0.1,\y) node[left] {\y};
-
-%     % Draw lines for individuals
-%     \draw (0,1) -- (5,1);
-%     \draw (0,2) -- (4,2);
-%     \draw (0,3) -- (3,3);
-%     \draw (0,4) -- (2,4);
-%     \draw (0,5) -- (1,5);
-
-%     % Draw censor marks 
-%     \node at (1,5) {$>$};
-%     \node at (2,4) {$>$};
-%     \node at (3,3) {$>$};
-%     \node at (4,2) {$>$};
-%     \node at (5,1) {$>$};
-
-%     % Add a small discontinuity on the x axis
-%     \draw[thick] (5.3,0.1) -- (5.4,-0.1);
-%     \draw[thick] (5.4,0.1) -- (5.5,-0.1);
-
-%     % Draw the rest of the x-axis with a gap
-%     \draw[->] (5.5,0) -- (6.5,0);
-
-%     % Add infinity symbol on the x axis
-%     \node at (7.3, 0) {$\infty$ Doses};
-%     \node at (6, -0.4) {};
-%     \node at (3.5, -1) {Doses allowed};
-% \end{tikzpicture}
-% \note{
-%     \begin{itemize}
-%         \item Before I mentioned that there is both no one protocol, but also that this definition can be modulated; This figure attempts to illustrate this point.
-%         \item On the x-axis there are the number of doses allowed before the protocol has been violated and censoring occurs. The ITT analysis would be infinite number of doses, becuase the only thing that matters is randomization assignment.
-%         \item Person one is allowed to miss 4 doses and on the 5th missed dose or treatment they are censored. Other protocols are still possible, for instance protocol 2 only allows 3 missed doses and porotocl 5 allows none, and a participant is censored as soon as they miss one dose.
-%         \item We will use this approach in the example I will highlight next
-%     \end{itemize}
-% }
-% \end{frame}
-
 \section{Example using ACTG 5202 Trial}
 
-\begin{frame}
-    \huge
-    \centering
-    An example using an HIV Trial: \\
-   
-    AIDS Clinical Trial Group (ACTG) 5202
-    \note{ Ill now go over some results from a per protocol analysis that varies how protocol is defined in order to illustrate my point.}
-\end{frame}
-
-\begin{frame}{Role of adherence in HIV treatment efficacy}
+\begin{frame}{Example: adherence in HIV treatment}
     \begin{columns}
     \begin{column}{0.45\textwidth}
         \begin{itemize}
             \item Adherence needed for HIV viral suppression varies by treatment regimen.
             \item Blanket recommendations fail.
-            \item[\ding{43}] Understanding of how adherence impacts efficacy is \textit{critical}\footnotemark[1] for:
+            \item[\ding{43}] Understanding of how adherence impacts efficacy is \textit{critical}\footnote{\tiny Adimora, Cole and Eron CID 2017} for:
             \begin{itemize}
                 \item Developing new treatments.
                 \item Maximizing current treatments.
             \end{itemize}
         \end{itemize}
-        \footnotetext[1]{\tiny Adimora, Cole and Eron CID 2017}
+        
     \end{column}
 % Column 2
     \begin{column}{0.55\textwidth}
@@ -315,13 +256,15 @@ SER June 19 2024}
     \end{column}
 \end{columns}
 
-\note{The efficacy of HIV treatments depends both on the mechanism of the medication and the adherence to a dosing scheme. In general it is not possible to make a blanket statement that any number of missed doses per time-frame is ok or not. Thus evaluating adherence in in terms of doses taken should be considered.} 
+\note{ Ill now go over some results from a per protocol analysis that varies how protocol is defined in order to illustrate my point.\\
+\vspace{0.5cm}
+The motivation behind this analysis is that the efficacy of HIV treatments depends both on the mechanism of the medication and the adherence to a dosing scheme. In general it is not possible to make a blanket statement that any number of missed doses per time-frame is ok or not. Thus evaluating adherence in in terms of doses taken should be considered. This is where a per-protocol analysis comes in.} 
 \end{frame}   
 
     \subsection{Population}
 
 
-\begin{frame}{ACTG 5202 Study Population}
+\begin{frame}{An example using an HIV Trial: ACTG 5202 Study Population}
     Phase 3b RCT at 59 sites, US and Puerto Rico
     \vspace{0.53cm}
 
@@ -345,14 +288,10 @@ SER June 19 2024}
         \bottomrule
         \end{tabular}
     }
-    \note{Phase 3 RCT in 59 sites in the US and Puerto Rico participants Randomized 1:1  TDF/FTC or ABC/3TC
+    \note{Our example study was the ACTG 5202 Phase 3 RCT conducted at 59 sites in the US and Puerto Rico participants. The study Randomized 1857 persons 1:1  TDF/FTC or ABC/3TC stratified by HIV-RNA screening level. It is worth it to note a few points about this population
   
     \begin{itemize} 
-        \item TDF/FTC + (EFV or ATV/r) + ABC/3TC placebo
-        \item ABC/3TC + (EFV or ATV/r) + TDF/FTC placebo
-        \item Stratified by HIV-1 RNA screening level of
-        \item $< 100,000$
-        \item or  $\geq 100,000$ 
+        \item Most participants were male, and between 26 and 49 years old and starting with a relatively high viral load and low CD4 count.
     \end{itemize}}
 \end{frame}
 
@@ -362,10 +301,9 @@ SER June 19 2024}
             \item Estimand: $E\left[Y^{r=1,\bar{a}=1}\right]-E\left[Y^{r=0,\bar{a}=0}\right]$ at 48 weeks. %and 96 weeks.
             \item Will vary protocol definition depending on the number of doses missed.
         \end{itemize}
-        \vspace{0.4cm}
-        Outcomes: Composite virologic failure and all-cause mortality
-        \vspace{0.4cm}
-        Methods: IPW analysis accounting for:
+        \vspace{0.3cm}
+        Outcomes: Composite virologic failure and all-cause mortality.\\        \vspace{0.3cm}
+        Methods: IPW analysis accounting for
             \begin{itemize}
                         \item Age, Sex, Ethnicity
                         \item Baseline CD4
@@ -373,11 +311,9 @@ SER June 19 2024}
                         \item Time varying CD4
                         \item Time varying HIV RNA
             \end{itemize}
-        \note{The ACTG 5202 study was a phase 3 trial throughout the US and Puerto Rico. The findings were published in 2009 and then in 2011
-        \begin{itemize}
-            \item We reanalyzed this data with the goal to evaluate treatment effects in under multiple protocol definitions to estimate treatment efficacy in the population of HIV+ person in the United states. 
-            \item We aimed to estimate the risk difference at 48 weeks %and 96 weeks. 
-        \end{itemize}
+        \note{In our reanalysis we aimed to estimate the per protocol effect on a composite of viral failure and all cause mortality at 48 weeks but under different definitions of the treatment protocol based on missed doses.
+        \vspace{0.5cm}
+        We performed an IPW analysis while accounting for baseline demographics and biochemical marker, and also accounted for time varying HIV RNA and CD4 count.
         }
     \end{frame}
 
@@ -423,12 +359,10 @@ SER June 19 2024}
            }
        \label{fig:aim2-dag}
        \end{figure}
-$j$: follow up time, $\mathbf{L_j}$: vector of covariates at follow up time $j$\\
+$t$: follow up time, $\mathbf{L_t}$: vector of covariates at follow up time $t$\\
 
-$C_j$: treatment at follow up time $j$, $R$: randomization, $Y$: viral failure or death       
-\note{A simplified DAG illustrates our assumptions. We are assuming that randomization to treatment impacts adherence, and that baseline covariate values and covariate values at the preceeding time point also impacts adherence and the outcome.\\
-\vspace{0.5cm}
-we will use IPW in the analysis here to account for these factors that leads to differences in adherence and the outcome} 
+$C_t$: protocol deviation at follow up time $t$, $R$: randomization, $Y$: viral failure or death       
+\note{This simplified DAG illustrates our assumptions. Briefly, we are assuming that randomization to treatment impacts adherence (C) through treatment assignment, and that adherence at each time point is only impacted by treatment assignment, adherence at the previous time point and baseline and immediately preceeding values of covariates} 
    \end{frame}
 
 \begin{frame}{Adherence and Protocol}
@@ -469,7 +403,7 @@ Within the past week & \\
 \end{tabular}
 }
 \end{table}
-\note{Adhrence in ACTG 5202 was collecetd by self report and whether or not there were missed doses within a previous time frame. There was also information about how closesly a dosing regimen was followed but we did not incorporate that here.\\
+\note{Adhrence in ACTG 5202 was collecetd by self report and whether or not there were missed doses reported within the previous time frame. There was also information about how closesly a dosing regimen was followed but we did not incorporate that here.\\
 \vspace{0.5cm}
 We defined protocol deviation, illustrated in the bottom table,  by how many missed doses were acceptable. For instance if 0 doses missed were OK, then as soon as a person reported missing any doses they were censored. For those where missing 4 doses was ok, as soon as they missed the fifth dose they were censored.} 
 \end{frame}
@@ -482,14 +416,16 @@ We defined protocol deviation, illustrated in the bottom table,  by how many mis
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{llllllll}
         \toprule
-        Treatment Group & Censored & 1 Dose & 2 Dose & 3 Dose & 4 Dose & 5 Dose & Total\\
+        \multicolumn{2}{c}{} & \multicolumn{5}{c}{Doses Missed} & \\
+        \cmidrule(r){3-7}
+        Treatment Group & LTFU & 1 & 2 & 3 & 4 & 5 & Total\\
         \midrule
         ABC/3TC & 234 & 276 & 110 & 57 & 18 & 7 & 928\\
         TDF/FTC & 211 & 263 & 79 & 38 & 23 & 7 & 929\\
         \bottomrule
-        \end{tabular}
+    \end{tabular}
     }
-    \note{As might be expected as the definition of protocol deviation becomes more strict, requiring more missed doses to be censored, there is a decrease in the number of participants deviating from the protocol. This goes from 276 in the ABC arm and 263 in the TDF arm for the 1 dose protocol down to 7 in each arm under the 5 dose protocol definition.}
+    \note{As might be expected as the definition of protocol deviation by becomes more relaxed, by requiring more missed doses to be censored, there is a decrease in the number of participants deviating from the protocol. Because fewer and fewer participants have missed 4,5,6 etc doses. This goes from 276 in the ABC arm and 263 in the TDF arm for the 1 dose protocol down to 7 in each arm under the 5 dose protocol definition.}
 \end{frame}
 
 
@@ -552,11 +488,13 @@ We defined protocol deviation, illustrated in the bottom table,  by how many mis
     \begin{enumerate}
         \item Completed with public access data.\footnotemark[1]
         \item Reliance on coarse, self-reported medication adherence.
-        \item Assume identification conditions met.\footnotemark[2]
+        \item Assume identification conditions met.
+            \begin{itemize}
+                \item[\ding{43}] Not guaranteed even though in a trial. Just like observational studies.
+            \end{itemize} 
         \item Future directions include repeating analysis with g-formula, considering additional protocols, and extending to different diseases. 
     \end{enumerate}
 \footnotetext[1]{Approved for more granular data from ACTG, awaiting dataset}
-\footnotetext[2]{NB: not guaranteed in per-protocol setting even though it is a trial}
 \note{This is a work in progress and There were some limitations.
 \begin{enumerate}
     \item this analysis was completed with public data. We have approval from ACTG to obtain more granular data and we will update our results with that
